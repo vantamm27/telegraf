@@ -198,7 +198,7 @@ func (c *CtrlXDataLayer) createMetric(em *sseEventData, sub *Subscription) (tele
 	switch em.Type {
 	case "object":
 		flattener := jsonParser.JSONFlattener{}
-		err := flattener.FullFlattenJSON(fieldKey, em.Value, true, true)
+		err := flattener.FullFlattenJSON(fieldKey, em.Value, true, true, 0)
 		if err != nil {
 			return nil, err
 		}

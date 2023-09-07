@@ -146,7 +146,7 @@ func gnmiToFields(name string, updateVal *gnmiLib.TypedValue) (map[string]interf
 			return nil, fmt.Errorf("failed to parse JSON value: %w", err)
 		}
 		flattener := jsonparser.JSONFlattener{Fields: fields}
-		if err := flattener.FullFlattenJSON(name, value, true, true); err != nil {
+		if err := flattener.FullFlattenJSON(name, value, true, true, 0); err != nil {
 			return nil, fmt.Errorf("failed to flatten JSON: %w", err)
 		}
 	}

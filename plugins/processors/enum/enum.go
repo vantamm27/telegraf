@@ -117,6 +117,7 @@ func (mapper *EnumMapper) tagMapping(metric telegraf.Metric, mapping Mapping, ne
 }
 
 func adjustValue(in interface{}) interface{} {
+	//fmt.Println("enum", "adjustValue")
 	switch val := in.(type) {
 	case bool:
 		return strconv.FormatBool(val)

@@ -284,8 +284,12 @@ func (m *metric) Drop() {
 
 // Convert field to a supported type or nil if inconvertible
 func convertField(v interface{}) interface{} {
+
+	fmt.Println("metric", "convertField", v)
 	switch v := v.(type) {
 	case float64:
+		return v
+	case interface{}:
 		return v
 	case int64:
 		return v

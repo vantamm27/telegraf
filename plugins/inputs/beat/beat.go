@@ -181,7 +181,7 @@ func (beat *Beat) Gather(accumulator telegraf.Accumulator) error {
 			return fmt.Errorf("unknown stats-type %q", name)
 		}
 		flattener := jsonparser.JSONFlattener{}
-		err := flattener.FullFlattenJSON("", stats, true, true)
+		err := flattener.FullFlattenJSON("", stats, true, true, 0)
 		if err != nil {
 			return err
 		}

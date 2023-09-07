@@ -42,6 +42,7 @@ type Parser struct {
 }
 
 func (p *Parser) parseArray(data []interface{}, timestamp time.Time) ([]telegraf.Metric, error) {
+	fmt.Println("json", "parseArray")
 	results := make([]telegraf.Metric, 0)
 
 	for _, item := range data {
@@ -64,13 +65,14 @@ func (p *Parser) parseArray(data []interface{}, timestamp time.Time) ([]telegraf
 }
 
 func (p *Parser) parseObject(data map[string]interface{}, timestamp time.Time) ([]telegraf.Metric, error) {
+	fmt.Println("json", "parseObject")
 	tags := make(map[string]string)
 	for k, v := range p.DefaultTags {
 		tags[k] = v
 	}
 
 	f := JSONFlattener{}
-	err := f.FullFlattenJSON("", data, true, true)
+	err := f.FullFlattenJSON("", data, true, true, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -110,8 +112,10 @@ func (p *Parser) parseObject(data map[string]interface{}, timestamp time.Time) (
 	}
 
 	tags, nFields := p.switchFieldToTag(tags, f.Fields)
+	fmt.Println("tags", tags)
+	fmt.Println("nFields", nFields)
 	m := metric.New(name, tags, nFields, timestamp)
-
+	fmt.Println("metric", m)
 	return []telegraf.Metric{m}, nil
 }
 
@@ -120,7 +124,9 @@ func (p *Parser) parseObject(data map[string]interface{}, timestamp time.Time) (
 // will delete any strings/bools that shouldn't be fields
 // assumes that any non-numeric values in TagKeys should be displayed as tags
 func (p *Parser) switchFieldToTag(tags map[string]string, fields map[string]interface{}) (map[string]string, map[string]interface{}) {
+	fmt.Println("json", "switchFieldToTag")
 	for name, value := range fields {
+		fmt.Println("json", name, value)
 		if p.tagFilter == nil {
 			continue
 		}
@@ -139,25 +145,27 @@ func (p *Parser) switchFieldToTag(tags map[string]string, fields map[string]inte
 		case float64:
 			tags[name] = strconv.FormatFloat(t, 'f', -1, 64)
 			delete(fields, name)
+
 		default:
 			p.Log.Errorf("Unrecognized type %T", value)
 		}
 	}
 
 	// remove any additional string/bool values from fields
-	for fk := range fields {
-		switch fields[fk].(type) {
-		case string, bool:
-			if p.stringFilter != nil && p.stringFilter.Match(fk) {
-				continue
-			}
-			delete(fields, fk)
-		}
-	}
+	// for fk := range fields {
+	// 	switch fields[fk].(type) {
+	// 	case string, bool:
+	// 		if p.stringFilter != nil && p.stringFilter.Match(fk) {
+	// 			continue
+	// 		}
+	// 		delete(fields, fk)
+	// 	}
+	// }
 	return tags, fields
 }
 
 func (p *Parser) Init() error {
+	fmt.Println("json", "Init")
 	var err error
 
 	p.stringFilter, err = filter.Compile(p.StringFields)
@@ -182,6 +190,7 @@ func (p *Parser) Init() error {
 }
 
 func (p *Parser) Parse(buf []byte) ([]telegraf.Metric, error) {
+	fmt.Println("json", "Parse")
 	if p.Query != "" {
 		result := gjson.GetBytes(buf, p.Query)
 		buf = []byte(result.Raw)
@@ -220,6 +229,7 @@ func (p *Parser) Parse(buf []byte) ([]telegraf.Metric, error) {
 }
 
 func (p *Parser) ParseLine(line string) (telegraf.Metric, error) {
+	fmt.Println("json", "ParseLine")
 	metrics, err := p.Parse([]byte(line + "\n"))
 
 	if err != nil {
@@ -234,10 +244,12 @@ func (p *Parser) ParseLine(line string) (telegraf.Metric, error) {
 }
 
 func (p *Parser) SetDefaultTags(tags map[string]string) {
+	fmt.Println("json", "SetDefaultTags")
 	p.DefaultTags = tags
 }
 
 func init() {
+	fmt.Println("json", "init")
 	parsers.Add("json",
 		func(defaultMetricName string) telegraf.Parser {
 			return &Parser{

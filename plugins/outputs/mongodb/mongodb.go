@@ -200,13 +200,15 @@ func (s *MongoDB) Close() error {
 func marshalMetric(metric telegraf.Metric) bson.D {
 	var bdoc bson.D
 	for k, v := range metric.Fields() {
+		//fmt.Println("mongodb", "marshalMetric", "Field", k)
 		bdoc = append(bdoc, primitive.E{Key: k, Value: v})
 	}
-	var tags bson.D
-	for k, v := range metric.Tags() {
-		tags = append(tags, primitive.E{Key: k, Value: v})
-	}
-	bdoc = append(bdoc, primitive.E{Key: "tags", Value: tags})
+	// var tags bson.D
+	// for k, v := range metric.Tags() {
+	// 	fmt.Println("mongodb", "marshalMetric", "Tag", k)
+	// 	tags = append(tags, primitive.E{Key: k, Value: v})
+	// }
+	//bdoc = append(bdoc, primitive.E{Key: "tags", Value: tags})
 	bdoc = append(bdoc, primitive.E{Key: "timestamp", Value: metric.Time()})
 	return bdoc
 }

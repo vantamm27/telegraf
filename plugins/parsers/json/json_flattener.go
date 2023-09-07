@@ -13,11 +13,12 @@ type JSONFlattener struct {
 func (f *JSONFlattener) FlattenJSON(
 	fieldname string,
 	v interface{}) error {
+	fmt.Println("json", "FlattenJSON")
 	if f.Fields == nil {
 		f.Fields = make(map[string]interface{})
 	}
 
-	return f.FullFlattenJSON(fieldname, v, false, false)
+	return f.FullFlattenJSON(fieldname, v, false, false, 0)
 }
 
 // FullFlattenJSON flattens nested maps/interfaces into a fields map (including bools and string)
@@ -26,35 +27,49 @@ func (f *JSONFlattener) FullFlattenJSON(
 	v interface{},
 	convertString bool,
 	convertBool bool,
+	dep int,
 ) error {
+	fmt.Println("json", "FullFlattenJSON", dep)
+	fmt.Println(fieldname, fieldname, convertString, convertBool)
 	if f.Fields == nil {
 		f.Fields = make(map[string]interface{})
 	}
 
 	switch t := v.(type) {
 	case map[string]interface{}:
-		for k, v := range t {
-			fieldkey := k
-			if fieldname != "" {
-				fieldkey = fieldname + "_" + fieldkey
-			}
+		if dep >= 1 {
+			f.Fields[fieldname] = t
+		} else {
 
-			err := f.FullFlattenJSON(fieldkey, v, convertString, convertBool)
-			if err != nil {
-				return err
+			for k, v := range t {
+				fieldkey := k
+				if fieldname != "" {
+					fieldkey = fieldname + "_" + fieldkey
+				}
+
+				err := f.FullFlattenJSON(fieldkey, v, convertString, convertBool, dep+1)
+				if err != nil {
+					return err
+				}
 			}
 		}
+		//f.Fields[fieldname] = t
 	case []interface{}:
-		for i, v := range t {
-			fieldkey := strconv.Itoa(i)
-			if fieldname != "" {
-				fieldkey = fieldname + "_" + fieldkey
-			}
-			err := f.FullFlattenJSON(fieldkey, v, convertString, convertBool)
-			if err != nil {
-				return err
+		if dep >= 1 {
+			f.Fields[fieldname] = t
+		} else {
+			for i, v := range t {
+				fieldkey := strconv.Itoa(i)
+				if fieldname != "" {
+					fieldkey = fieldname + "_" + fieldkey
+				}
+				err := f.FullFlattenJSON(fieldkey, v, convertString, convertBool, dep+1)
+				if err != nil {
+					return err
+				}
 			}
 		}
+		// f.Fields[fieldname] = t
 	case float64:
 		f.Fields[fieldname] = t
 	case string:
