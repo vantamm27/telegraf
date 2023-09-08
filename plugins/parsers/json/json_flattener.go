@@ -13,7 +13,7 @@ type JSONFlattener struct {
 func (f *JSONFlattener) FlattenJSON(
 	fieldname string,
 	v interface{}) error {
-	fmt.Println("json", "FlattenJSON")
+	//("json", "FlattenJSON")
 	if f.Fields == nil {
 		f.Fields = make(map[string]interface{})
 	}
@@ -29,8 +29,8 @@ func (f *JSONFlattener) FullFlattenJSON(
 	convertBool bool,
 	dep int,
 ) error {
-	fmt.Println("json", "FullFlattenJSON", dep)
-	fmt.Println(fieldname, fieldname, convertString, convertBool)
+	//fmt.Println("json", "FullFlattenJSON", dep)
+	//fmt.Println(fieldname, fieldname, convertString, convertBool)
 	if f.Fields == nil {
 		f.Fields = make(map[string]interface{})
 	}

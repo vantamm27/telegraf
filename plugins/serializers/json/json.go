@@ -55,7 +55,7 @@ func (s *Serializer) Init() error {
 }
 
 func (s *Serializer) Serialize(metric telegraf.Metric) ([]byte, error) {
-	fmt.Println("Serializer", "Serialize")
+	//fmt.Println("Serializer", "Serialize")
 	var obj interface{}
 	obj = s.createObject(metric)
 
@@ -79,7 +79,7 @@ func (s *Serializer) Serialize(metric telegraf.Metric) ([]byte, error) {
 }
 
 func (s *Serializer) SerializeBatch(metrics []telegraf.Metric) ([]byte, error) {
-	fmt.Println("Serializer", "SerializeBatch")
+	//fmt.Println("Serializer", "SerializeBatch")
 	objects := make([]interface{}, 0, len(metrics))
 	for _, metric := range metrics {
 		m := s.createObject(metric)
@@ -109,7 +109,7 @@ func (s *Serializer) SerializeBatch(metrics []telegraf.Metric) ([]byte, error) {
 }
 
 func (s *Serializer) createObject(metric telegraf.Metric) map[string]interface{} {
-	fmt.Println("Serializer", "createObject")
+	//fmt.Println("Serializer", "createObject")
 	m := make(map[string]interface{}, 4)
 
 	tags := make(map[string]string, len(metric.TagList()))
@@ -120,7 +120,7 @@ func (s *Serializer) createObject(metric telegraf.Metric) map[string]interface{}
 
 	fields := make(map[string]interface{}, len(metric.FieldList()))
 	for _, field := range metric.FieldList() {
-		fmt.Println("Serializer", "field", field)
+		//fmt.Println("Serializer", "field", field)
 		val := field.Value
 		switch fv := field.Value.(type) {
 		case float64:
@@ -154,7 +154,7 @@ func (s *Serializer) createObject(metric telegraf.Metric) map[string]interface{}
 }
 
 func (s *Serializer) transform(obj interface{}) (interface{}, error) {
-	fmt.Println("Serializer", "transform")
+	//fmt.Println("Serializer", "transform")
 	transformation, err := jsonata.Compile(s.Transformation)
 	if err != nil {
 		return nil, err
